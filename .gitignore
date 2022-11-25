@@ -1,0 +1,7 @@
+# Project exclude paths
+/server/node_modules/
+/client/node_modules/
+/.idea/vcs.xml
+/.idea/modules.xml
+/.idea/crypto_hw2.iml
+/.idea/.gitignore
