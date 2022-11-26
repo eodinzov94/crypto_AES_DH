@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react';
+import React, {FC} from 'react';
 import {Alert, Button, Container, TextField} from "@mui/material";
 import LockIcon from '@mui/icons-material/Lock';
 import {StepType} from "../types/StepType";
@@ -7,28 +7,38 @@ import EmojiObjectsIcon from '@mui/icons-material/EmojiObjects';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import {generateDH_Key} from "../utils/crypto";
 import Service from "../api/API";
-import {createDiffieHellman} from "crypto";
 const Handshake:FC<StepType> = ({props}) => {
-    const generateFunc = ()=> {
-        props.setLoading(true)
-        const client = generateDH_Key()
-        const prime = Buffer.from(client.getPrime()).toString('hex')
-        const generator = Buffer.from(client.getGenerator()).toString('hex')
-        const key = Buffer.from(client.getPublicKey()).toString('hex')
-        console.log(prime);
-        props.setPrime(prime)
-        props.setGenerator(generator)
-        props.setClientPublicKey(key)
-        props.setClient(client)
-        props.setLoading(false)
+    const generateFunc = async ()=> {
+            props.setLoading(true)
+            const client = generateDH_Key();
+            const prime = Buffer.from(client.getPrime()).toString('hex')
+            const generator = Buffer.from(client.getGenerator()).toString('hex')
+            const key = Buffer.from(client.getPublicKey()).toString('hex')
+            console.log(prime);
+            console.log(generator);
+            console.log(key);
+            props.setPrime(prime)
+            props.setGenerator(generator)
+            props.setClientPublicKey(key)
+            props.setClient(client)
+            props.setLoading(false)
     }
     const connect = async () => {
-        props.setLoading(true)
-        const {publicKey,sessionID} = await Service.createSession(props.name,props.prime,props.generator,props.clientPublicKey)
-        props.setSessionID(sessionID)
-        props.setServerPublicKey(publicKey)
-        props.setLoading(false)
-        props.setCurrentStep((prev: number) => prev +1)
+        try{
+            props.setLoading(true)
+            const {publicKey,sessionID} = await Service.createSession(props.name,props.prime,props.generator,props.clientPublicKey)
+            props.setSessionID(sessionID)
+            props.setServerPublicKey(publicKey)
+            props.setLoading(false)
+            props.setCurrentStep((prev: number) => prev +1)
+        }
+       catch (e) {
+           props.setPrime("")
+           props.setGenerator("")
+           props.setClientPublicKey("")
+           props.setClient(null)
+           props.setLoading(false)
+       }
     }
     return (
         <Container maxWidth="sm">
@@ -39,6 +49,7 @@ const Handshake:FC<StepType> = ({props}) => {
                             color="secondary"
                             startIcon={<VpnKeyIcon />}
                             sx={{ml:"30px"}}
+                            onClick={()=>props.setCurrentStep(1)}
                     />
 
                 </Alert>

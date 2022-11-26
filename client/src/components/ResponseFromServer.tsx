@@ -11,8 +11,8 @@ const ResponseFromServer:FC<StepType> = ({props}) => {
         props.setLoading(true)
         const sharedKey = await generateSharedKey(props.client as DiffieHellman,props.serverPublicKey)
         props.setSharedKey(sharedKey)
-        const data = {name:props.name , sharedKey}
-        localStorage.setItem(props.sessionID, JSON.stringify(data))
+        const data = {name:props.name , sharedKey,sessionID:props.sessionID}
+        localStorage.setItem("session", JSON.stringify(data))
         props.setLoading(false)
     }
 
@@ -24,7 +24,7 @@ const ResponseFromServer:FC<StepType> = ({props}) => {
                 label="Received Key"
                 multiline
                 rows={4}
-                value={"2312325435435"}
+                value={props.serverPublicKey}
 
             />
             <TextField

@@ -14,5 +14,4 @@ export interface SessionCreateResponse extends Response{
 
 export interface MessageSendResponse extends Response{
     message:string
-    iv:string
 }

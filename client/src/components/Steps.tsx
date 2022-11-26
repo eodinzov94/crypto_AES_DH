@@ -25,7 +25,6 @@ export default function HorizontalLabelPositionBelowStepper() {
     const [clientPublicKey,setClientPublicKey] = useState("")
     const [serverPublicKey,setServerPublicKey] = useState("")
     const [sessionID,setSessionID] = useState("")
-    const [IV,setIV] = useState("")
     const [currentStep,setCurrentStep] = useState(0)
     const [name,setName] = useState("")
     const [isLoading, setLoading] = useState(false)
@@ -40,8 +39,6 @@ export default function HorizontalLabelPositionBelowStepper() {
                        { <StepContent sx={{mt:"100px"}}>
                             {<step.Component props={
                                {setCurrentStep,
-                                IV,
-                                setIV,
                                 name,
                                 setName,
                                 isLoading,

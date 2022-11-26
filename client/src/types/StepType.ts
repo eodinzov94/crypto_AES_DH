@@ -4,8 +4,6 @@ import {DiffieHellman} from "crypto";
 export interface StepType {
     props:{
         setCurrentStep: React.Dispatch<React.SetStateAction<number>>
-        IV:string
-        setIV:React.Dispatch<React.SetStateAction<string>>
         name:string
         setName:React.Dispatch<React.SetStateAction<string>>
         isLoading:boolean

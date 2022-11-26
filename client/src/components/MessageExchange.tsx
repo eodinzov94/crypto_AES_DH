@@ -5,7 +5,7 @@ import SendIcon from '@mui/icons-material/Send';
 import PhonelinkEraseIcon from '@mui/icons-material/PhonelinkErase';
 import {StepType} from "../types/StepType";
 import ExpandCircleDownIcon from '@mui/icons-material/ExpandCircleDown';
-import {decrypt, encrypt, generateIV} from "../utils/crypto";
+import {decrypt, encrypt} from "../utils/crypto";
 import Service from "../api/API";
 
 const MessageExchange:FC<StepType> = ({props}) => {
@@ -13,21 +13,17 @@ const MessageExchange:FC<StepType> = ({props}) => {
     const [encMsg,setEncMsg] = useState("")
     const [msgFromServer,setMsgFromServer] = useState("")
     const [encMsgFromServer,setEncMsgFromServer] = useState("")
-    useEffect(()=>{
-        props.setIV(generateIV())
-    },[])
     useEffect( ()=>{
         if( msg){
-            encrypt(msg,props.sharedKey,props.IV).then(data =>setEncMsg(data) )
+            encrypt(msg,props.sharedKey).then(data =>setEncMsg(data) )
         }
     },[msg])
     const sendMessage = async () => {
         props.setLoading(true)
-        const {message,iv} = await Service.sendMessage(props.sessionID,msg,props.IV)
+        const {message} = await Service.sendMessage(props.sessionID,msg)
         setEncMsgFromServer(message)
-        const decrypted = await decrypt(message,props.sharedKey,iv)
+        const decrypted = await decrypt(message,props.sharedKey)
         setMsgFromServer(decrypted)
-        props.setIV(generateIV())
         props.setLoading(false)
     }
     return (

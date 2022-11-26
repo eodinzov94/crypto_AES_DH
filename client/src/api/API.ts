@@ -16,23 +16,23 @@ export default class Service {
         });
 
     }
-    static async deleteSession(sessionID:string,encName:string,iv:string) {
+    static async deleteSession(sessionID:string,encName:string) {
 
         return axios({
             url: `${API_URL}/delete-session`,
             method: "DELETE",
             responseType: "json",
-            data: {sessionID, encName, iv}
+            data: {sessionID, encName}
         }).then((response: AxiosResponse<SessionDeleteResponse>) => {
             return response.data;
         });
     }
-    static async sendMessage(sessionID:string,message:string,iv:string) {
+    static async sendMessage(sessionID:string,message:string) {
         return axios({
             url: `${API_URL}/send-message`,
             method: "POST",
             responseType: "json",
-            data: {sessionID,message,iv}
+            data: {sessionID,message}
         }).then((response: AxiosResponse<MessageSendResponse>) => {
             return response.data;
         });
