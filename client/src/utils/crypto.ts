@@ -2,8 +2,8 @@ import {DiffieHellman,createCipheriv, createDecipheriv, createDiffieHellman, hkd
 
 
 
-export const generateDH_Key =  async ()  =>{
-    const client = createDiffieHellman(512)
+export const generateDH_Key =   ()  =>{
+    const client =  createDiffieHellman(512)
     client.generateKeys()
     return client
 }
@@ -23,7 +23,7 @@ export const deriveSharedKey = async (sharedSecretKey:string) => {
     return key
 }
 
-export const generateIV  = async (IV_LENGTH:number)=>{
+export const generateIV  = (IV_LENGTH:number = 16)=>{
     const iv = randomBytes(IV_LENGTH).toString('hex').slice(0, IV_LENGTH);
     return iv
 }

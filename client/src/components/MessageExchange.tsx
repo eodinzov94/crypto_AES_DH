@@ -1,16 +1,35 @@
-import React, {FC, useState} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import LoadingButton from '@mui/lab/LoadingButton';
 import {Container, Divider, TextField, Typography} from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
 import PhonelinkEraseIcon from '@mui/icons-material/PhonelinkErase';
 import {StepType} from "../types/StepType";
 import ExpandCircleDownIcon from '@mui/icons-material/ExpandCircleDown';
+import {decrypt, encrypt, generateIV} from "../utils/crypto";
+import Service from "../api/API";
 
-const MessageExchange:FC<StepType> = ({setCurrentStep}) => {
+const MessageExchange:FC<StepType> = ({props}) => {
     const [msg,setMsg] = useState("")
     const [encMsg,setEncMsg] = useState("")
     const [msgFromServer,setMsgFromServer] = useState("")
     const [encMsgFromServer,setEncMsgFromServer] = useState("")
+    useEffect(()=>{
+        props.setIV(generateIV())
+    },[])
+    useEffect( ()=>{
+        if( msg){
+            encrypt(msg,props.sharedKey,props.IV).then(data =>setEncMsg(data) )
+        }
+    },[msg])
+    const sendMessage = async () => {
+        props.setLoading(true)
+        const {message,iv} = await Service.sendMessage(props.sessionID,msg,props.IV)
+        setEncMsgFromServer(message)
+        const decrypted = await decrypt(message,props.sharedKey,iv)
+        setMsgFromServer(decrypted)
+        props.setIV(generateIV())
+        props.setLoading(false)
+    }
     return (
         <Container maxWidth="sm">
             <TextField
@@ -28,6 +47,7 @@ const MessageExchange:FC<StepType> = ({setCurrentStep}) => {
                 loading={false}
                 loadingPosition="end"
                 variant="contained"
+                onClick={sendMessage}
             >
                 Send
             </LoadingButton>
@@ -73,7 +93,7 @@ const MessageExchange:FC<StepType> = ({setCurrentStep}) => {
                 loadingPosition="end"
                 variant="contained"
                 color={"warning"}
-                onClick={()=>setCurrentStep((prev: number) => prev +1)}
+                onClick={()=>props.setCurrentStep((prev: number) => prev +1)}
             >
                 Close
             </LoadingButton>

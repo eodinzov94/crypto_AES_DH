@@ -4,7 +4,7 @@ import PowerOffIcon from '@mui/icons-material/PowerOff';
 import ReplayIcon from '@mui/icons-material/Replay';
 import {StepType} from "../types/StepType";
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-const ClosedConnection:FC<StepType> = ({setCurrentStep}) => {
+const ClosedConnection:FC<StepType> = ({props}) => {
     return (
         <Container maxWidth="sm">
             <Typography variant="h5" gutterBottom>
@@ -17,7 +17,7 @@ const ClosedConnection:FC<StepType> = ({setCurrentStep}) => {
                 variant="contained"
                 color={"error"}
                 endIcon={<DeleteForeverIcon />}
-                onClick={()=>setCurrentStep(0)}
+                onClick={()=>props.setCurrentStep(0)}
             >
 
                 Clear current session
@@ -28,7 +28,7 @@ const ClosedConnection:FC<StepType> = ({setCurrentStep}) => {
                 sx={{ml:"20px",mt:"18px"}}
                 variant="contained"
                 endIcon={<ReplayIcon />}
-                onClick={()=>setCurrentStep(0)}
+                onClick={()=>props.setCurrentStep(0)}
             >
 
                 Play again
