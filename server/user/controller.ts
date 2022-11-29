@@ -9,7 +9,7 @@ class Controller {
                         res:Response, next:NextFunction) {
         try {
             const { name, prime, generator, publicKey} = req.body;
-            const [serverPublicKey,sessionID] = await Service.createSession(name, prime, generator, publicKey);
+            const {serverPublicKey,sessionID} = await Service.createSession(name, prime, generator, publicKey);
             res.json({ publicKey:serverPublicKey,sessionID });
         } catch (err) {
             next(err)

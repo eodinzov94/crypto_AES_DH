@@ -1,5 +1,4 @@
 import express from 'express'
-import {body} from "express-validator";
 import Controller from "./user/controller";
 import cors from 'cors'
 

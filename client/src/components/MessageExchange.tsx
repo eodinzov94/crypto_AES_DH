@@ -20,7 +20,7 @@ const MessageExchange:FC<StepType> = ({props}) => {
     },[msg])
     const sendMessage = async () => {
         props.setLoading(true)
-        const {message} = await Service.sendMessage(props.sessionID,msg)
+        const {message} = await Service.sendMessage(props.sessionID,encMsg)
         setEncMsgFromServer(message)
         const decrypted = await decrypt(message,props.sharedKey)
         setMsgFromServer(decrypted)

@@ -1,10 +1,34 @@
-import React, {FC} from 'react';
+import React, {FC, useState} from 'react';
 import {Button, Container, Typography} from "@mui/material";
 import PowerOffIcon from '@mui/icons-material/PowerOff';
 import ReplayIcon from '@mui/icons-material/Replay';
 import {StepType} from "../types/StepType";
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import Service from "../api/API";
+import {encrypt} from "../utils/crypto";
 const ClosedConnection:FC<StepType> = ({props}) => {
+
+    const clearStorage = () => {
+        props.setPrime("")
+        props.setGenerator("")
+        props.setClientPublicKey("")
+        props.setServerPublicKey("")
+        props.setSessionID("")
+        props.setName("")
+        props.setSharedKey("")
+        props.setClient(null)
+        props.setCurrentStep(0)
+    }
+    const clearSession = async () => {
+        try{
+            const data = await Service.deleteSession(props.sessionID,await encrypt(props.name,props.sharedKey))
+            localStorage.removeItem("session")
+            clearStorage()
+        }
+        catch (e) {
+            console.log(e);
+        }
+    }
     return (
         <Container maxWidth="sm">
             <Typography variant="h5" gutterBottom>
@@ -17,10 +41,10 @@ const ClosedConnection:FC<StepType> = ({props}) => {
                 variant="contained"
                 color={"error"}
                 endIcon={<DeleteForeverIcon />}
-                onClick={()=>props.setCurrentStep(0)}
+                onClick={clearSession}
             >
 
-                Clear current session
+                Clear session & play
             </Button>
 
 
@@ -28,7 +52,7 @@ const ClosedConnection:FC<StepType> = ({props}) => {
                 sx={{ml:"20px",mt:"18px"}}
                 variant="contained"
                 endIcon={<ReplayIcon />}
-                onClick={()=>props.setCurrentStep(0)}
+                onClick={clearStorage}
             >
 
                 Play again

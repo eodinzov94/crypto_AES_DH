@@ -1,23 +1,21 @@
-import {createDiffieHellman} from "crypto";
 import {AES,enc} from 'crypto-js'
-import hkdf from "futoin-hkdf";
+// @ts-ignore
+import {createDiffieHellman} from 'diffie-hellman/browser.js'
 
 
 export const generateSharedKey =  async (prime: string, generator: string, clientPublicKey: string)  =>{
-    const server = createDiffieHellman(Buffer.from(prime,"hex"),Buffer.from(generator,"hex"))
-    server.generateKeys()
-    const sharedSecretKey = server.computeSecret(clientPublicKey,"hex","hex")
-    console.log(sharedSecretKey);
-    const sharedKey = await deriveSharedKey(sharedSecretKey)
-    const serverPublicKey = server.getPublicKey().toString("hex")
-    return [sharedKey,serverPublicKey]
+    const prime_buf     =   Buffer.from(prime,'hex')
+    const gen_buff      =   Buffer.from(generator,'hex')
+    const clientPK_buff =   Buffer.from(clientPublicKey,'hex')
+    const server = createDiffieHellman(prime_buf, gen_buff)
+    const serverPK_buff = server.generateKeys()
+    const serverPublicKey =  Buffer.from(serverPK_buff).toString('hex')
+    const sharedSecretKey = server.computeSecret(clientPK_buff)
+    const sharedKey = Buffer.from(sharedSecretKey).toString('hex')
+    console.log(sharedKey);
+    return {sharedKey,serverPublicKey}
 }
 
-const deriveSharedKey = async (sharedSecretKey:string) => {
-    const derivedKey = hkdf(sharedSecretKey,16,{salt:'salt123',info:'info',hash:'SHA-512'})
-    const key = Buffer.from(derivedKey).toString('hex')
-    return key
-}
 
 
 
@@ -28,6 +26,6 @@ export const encrypt =  async (text:string,key:string)=>{
 
 export const decrypt =  async (text:string,key:string)=>{
     const decipher = AES.decrypt(text,key)
-    const decryptedData = JSON.stringify(decipher.toString(enc.Utf8))
+    const decryptedData = decipher.toString(enc.Utf8)
     return decryptedData
 }

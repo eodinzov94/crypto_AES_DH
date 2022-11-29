@@ -1,4 +1,4 @@
-import React, {FC} from 'react';
+import React, {FC, useState} from 'react';
 import {Alert, Button, Container, TextField} from "@mui/material";
 import LockIcon from '@mui/icons-material/Lock';
 import {StepType} from "../types/StepType";
@@ -6,22 +6,33 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import EmojiObjectsIcon from '@mui/icons-material/EmojiObjects';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import {generateDH_Key} from "../utils/crypto";
+import {Buffer} from 'buffer'
 import Service from "../api/API";
 const Handshake:FC<StepType> = ({props}) => {
+    const [generatingKey,setGenerationKey] = useState(false)
+    const savedSession = localStorage.getItem("session")
+    const loadSession = () => {
+        if(!savedSession){
+            return
+        }
+        const {name, sharedKey,sessionID} = JSON.parse(savedSession)
+        props.setName(name)
+        props.setSharedKey(sharedKey)
+        props.setSessionID(sessionID)
+        props.setCurrentStep(2)
+
+    }
     const generateFunc = async ()=> {
-            props.setLoading(true)
-            const client = generateDH_Key();
+            setGenerationKey(true)
+            const client = await generateDH_Key().then(client => client);
+            const clientPublicKey = Buffer.from(client.getPublicKey()).toString('hex')
             const prime = Buffer.from(client.getPrime()).toString('hex')
             const generator = Buffer.from(client.getGenerator()).toString('hex')
-            const key = Buffer.from(client.getPublicKey()).toString('hex')
-            console.log(prime);
-            console.log(generator);
-            console.log(key);
             props.setPrime(prime)
             props.setGenerator(generator)
-            props.setClientPublicKey(key)
+            props.setClientPublicKey(clientPublicKey)
             props.setClient(client)
-            props.setLoading(false)
+            setGenerationKey(false)
     }
     const connect = async () => {
         try{
@@ -42,19 +53,19 @@ const Handshake:FC<StepType> = ({props}) => {
     }
     return (
         <Container maxWidth="sm">
-            <div style={{display:"block"}}>
+            {!!savedSession && <div style={{display:"block"}}>
                 <Alert severity="warning">
                     Log to the previous session
                     <Button variant="outlined"
                             color="secondary"
                             startIcon={<VpnKeyIcon />}
                             sx={{ml:"30px"}}
-                            onClick={()=>props.setCurrentStep(1)}
+                            onClick={loadSession}
                     />
 
                 </Alert>
 
-            </div>
+            </div>}
             <TextField
                 sx={{mt:"30px"}}
                 disabled
@@ -68,7 +79,7 @@ const Handshake:FC<StepType> = ({props}) => {
             <LoadingButton
                 sx={{ml:"20px",mt:"30px"}}
                 endIcon={<EmojiObjectsIcon />}
-                loading={props.isLoading}
+                loading={generatingKey}
                 disabled={props.clientPublicKey.length > 0}
                 loadingPosition="end"
                 variant="contained"
